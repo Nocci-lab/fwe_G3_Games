@@ -1,0 +1,721 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Day 2 Vocab Quiz (16 in 3 minutes)</title>
+  <style>
+    :root{
+      --bg:#0f1220;
+      --text:#eaf0ff;
+      --muted:#aab4d6;
+      --good:#20c997;
+      --bad:#ff5d6c;
+      --accent:#7c5cff;
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
+      background: radial-gradient(1200px 800px at 30% 20%, #1b2050, var(--bg));
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+    }
+    .app{
+      width:min(980px, 100%);
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+    }
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:14px 16px;
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.06);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:800;
+      letter-spacing:.3px;
+    }
+    .pill{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      color:var(--muted);
+      font-weight:600;
+      white-space:nowrap;
+    }
+    .pill strong{color:var(--text)}
+    .grid{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:14px;
+    }
+    @media (max-width: 860px){
+      .grid{grid-template-columns:1fr}
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .cardHeader{
+      padding:14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      background: rgba(0,0,0,.16);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .cardHeader h2{
+      margin:0;
+      font-size:16px;
+      color:var(--muted);
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+    .content{padding:16px}
+    .questionBox{
+      background: rgba(0,0,0,.16);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 16px;
+      padding:16px;
+      margin-bottom:14px;
+    }
+    .qMeta{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      color:var(--muted);
+      font-weight:700;
+      font-size:13px;
+      margin-bottom:10px;
+    }
+    .qText{
+      font-size:28px;
+      font-weight:900;
+      line-height:1.15;
+      margin:0;
+      letter-spacing:.2px;
+      word-break:break-word;
+    }
+    .dirTag{
+      font-size:12px;
+      font-weight:900;
+      color: rgba(255,255,255,.90);
+      background: rgba(124,92,255,.30);
+      border: 1px solid rgba(124,92,255,.55);
+      padding:6px 10px;
+      border-radius: 999px;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      white-space:nowrap;
+    }
+    .choices{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width: 560px){
+      .choices{grid-template-columns:1fr}
+      .qText{font-size:24px}
+    }
+    button.choice{
+      width:100%;
+      border:none;
+      border-radius: 16px;
+      padding:14px 14px;
+      font-size:16px;
+      font-weight:800;
+      color:var(--text);
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      cursor:pointer;
+      transition: transform .06s ease, background .2s ease, border .2s ease;
+      text-align:left;
+      min-height:52px;
+    }
+    button.choice:hover{ transform: translateY(-1px); background: rgba(255,255,255,.12); }
+    button.choice:disabled{ cursor:not-allowed; opacity:.9 }
+    button.choice.good{
+      background: rgba(32,201,151,.18);
+      border: 1px solid rgba(32,201,151,.65);
+    }
+    button.choice.bad{
+      background: rgba(255,93,108,.16);
+      border: 1px solid rgba(255,93,108,.65);
+    }
+    .footerRow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      margin-top:14px;
+    }
+    .btn{
+      border:none;
+      border-radius: 999px;
+      padding:10px 14px;
+      font-weight:900;
+      cursor:pointer;
+      color:var(--text);
+      background: rgba(124,92,255,.34);
+      border: 1px solid rgba(124,92,255,.60);
+    }
+    .btn.secondary{
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.14);
+      color:var(--muted);
+    }
+    .btn:active{ transform: translateY(1px); }
+    .progressWrap{
+      width:100%;
+      height:10px;
+      background: rgba(255,255,255,.08);
+      border-radius:999px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .progress{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, rgba(124,92,255,.95), rgba(32,201,151,.95));
+      transition: width .25s ease;
+    }
+    .bearStage{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .bearBody{
+      padding:18px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      gap:10px;
+    }
+    .bear{
+      font-size: 76px;
+      filter: drop-shadow(0 10px 14px rgba(0,0,0,.35));
+      transform-origin: 50% 70%;
+    }
+    .bear.dance{
+      animation: dance .45s ease-in-out infinite alternate;
+    }
+    @keyframes dance{
+      0%{ transform: rotate(-7deg) translateY(0px) scale(1.02); }
+      100%{ transform: rotate(7deg) translateY(-2px) scale(1.05); }
+    }
+    .reward{
+      font-size:14px;
+      color:var(--muted);
+      font-weight:800;
+      text-align:center;
+      line-height:1.5;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      color:var(--muted);
+      font-weight:900;
+      justify-content:center;
+      white-space:nowrap;
+    }
+    .bigWin{
+      margin-top:6px;
+      font-weight:1000;
+      color: var(--text);
+      font-size:18px;
+    }
+    .hint{
+      color:var(--muted);
+      font-size:13px;
+      font-weight:700;
+      line-height:1.5;
+    }
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.55);
+      border: 1px solid rgba(255,255,255,.18);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 800;
+      opacity: 0;
+      pointer-events:none;
+      transition: opacity .25s ease, transform .25s ease;
+      backdrop-filter: blur(8px);
+    }
+    .toast.show{
+      opacity: 1;
+      transform: translateX(-50%) translateY(-6px);
+    }
+
+    .missTitle{ color: rgba(255,255,255,.92); font-weight:1000; }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <span style="font-size:20px">🐻</span>
+        <div>
+          <div style="font-size:15px;font-weight:1000">Day 2 — Vocab Quiz</div>
+          <div style="font-size:12px;color:var(--muted);font-weight:700">16 questions / 3 minutes / multiple-choice</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end">
+        <div class="pill">⏱️ <strong id="time">3:00</strong></div>
+        <div class="pill">✅ <strong id="score">0</strong> / 16</div>
+        <div class="pill">🏅 Reward <strong id="rewardCount">0</strong></div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- Quiz Panel -->
+      <div class="card">
+        <div class="cardHeader">
+          <h2>Question</h2>
+          <div class="dirTag" id="dirTag">↔︎ Mix (JP⇄EN)</div>
+        </div>
+
+        <div class="content">
+          <div class="progressWrap" aria-label="progress">
+            <div class="progress" id="progress"></div>
+          </div>
+
+          <div class="questionBox" style="margin-top:14px">
+            <div class="qMeta">
+              <div>Q <span id="qNum">1</span> / 16</div>
+              <div id="statusText">Choose the correct answer</div>
+            </div>
+            <p class="qText" id="qText">Press Start</p>
+          </div>
+
+          <div class="choices" id="choices"></div>
+
+          <div class="footerRow">
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button class="btn" id="startBtn">Start</button>
+              <button class="btn secondary" id="restartBtn" disabled>Restart</button>
+            </div>
+            <div class="hint" id="hint">
+              ・3分以内に16問完了で「音＋熊ダンス」🎵🐻<br/>
+              ・出題は毎回シャッフル（日本語→英語 / 英語→日本語 ミックス）
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel -->
+      <div class="bearStage">
+        <!-- Bear / Reward Card -->
+        <div class="card">
+          <div class="cardHeader">
+            <h2>Bear Reward</h2>
+            <div class="badge">🎁 Finish in 3:00</div>
+          </div>
+          <div class="bearBody">
+            <div class="bear" id="bear">🐻</div>
+            <div class="reward" id="rewardText">
+              <div class="badge">Status: <span id="bearStatus">Waiting</span></div>
+              <div class="bigWin" id="bigWin" style="display:none">YOU DID IT! 🎉</div>
+              <div style="margin-top:10px;color:var(--muted);font-weight:800">
+                Rewards earned today: <span id="rewardCount2">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ❌ Missed Words Card -->
+        <div id="missedCard" class="card" style="display:none;">
+          <div class="cardHeader">
+            <h2 class="missTitle">❌ Missed Words</h2>
+            <div class="badge">Review</div>
+          </div>
+          <div class="content">
+            <div id="missedList" class="hint" style="line-height:1.7;"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Nice!</div>
+
+<script>
+(() => {
+  // =========================
+  // Day 2 (Grade 3-ish) Vocabulary Dataset (16 words)
+  // =========================
+const WORDS = [
+  { en: "gym",      ja: "体育館" },
+  { en: "problem",  ja: "問題" },
+  { en: "report",   ja: "レポート" },
+  { en: "plan",     ja: "予定" },
+  { en: "college",  ja: "大学" },
+  { en: "science",  ja: "理科" },
+  { en: "beach",    ja: "浜辺" },
+  { en: "cold",     ja: "風邪" },
+
+  { en: "museum",   ja: "美術館" },
+  { en: "prize",    ja: "賞" },
+  { en: "clothes",  ja: "服" },
+  { en: "office",   ja: "職場" },
+  { en: "show",     ja: "番組" },
+  { en: "break",    ja: "休憩" },
+  { en: "festival", ja: "祭り" },
+  { en: "floor",    ja: "階／床" }
+];
+
+  const TOTAL_Q = 16;
+  const LIMIT_SEC = 180; // ★ 3 minutes
+
+  // UI elements
+  const timeEl = document.getElementById("time");
+  const scoreEl = document.getElementById("score");
+  const qNumEl = document.getElementById("qNum");
+  const qTextEl = document.getElementById("qText");
+  const choicesEl = document.getElementById("choices");
+  const statusTextEl = document.getElementById("statusText");
+  const progressEl = document.getElementById("progress");
+  const startBtn = document.getElementById("startBtn");
+  const restartBtn = document.getElementById("restartBtn");
+  const toastEl = document.getElementById("toast");
+
+  const bearEl = document.getElementById("bear");
+  const bearStatusEl = document.getElementById("bearStatus");
+  const bigWinEl = document.getElementById("bigWin");
+
+  const rewardCountEl = document.getElementById("rewardCount");
+  const rewardCountEl2 = document.getElementById("rewardCount2");
+
+  // Missed words UI
+  const missedCardEl = document.getElementById("missedCard");
+  const missedListEl = document.getElementById("missedList");
+
+  // Reward storage (per day) ★ Day1用キー
+  const REWARD_KEY = "bear_rewards_day1_g3";
+  let rewards = Number(localStorage.getItem(REWARD_KEY) || "0");
+  rewardCountEl.textContent = rewards;
+  rewardCountEl2.textContent = rewards;
+
+  // Game state
+  let timer = null;
+  let remaining = LIMIT_SEC;
+  let score = 0;
+  let qIndex = 0;
+  let questions = [];
+  let locked = false;
+  let started = false;
+  let missedWords = [];
+
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+
+  function formatTime(sec){
+    const m = Math.floor(sec/60);
+    const s = sec%60;
+    return `${m}:${String(s).padStart(2,"0")}`;
+  }
+
+  function showToast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    setTimeout(()=> toastEl.classList.remove("show"), 900);
+  }
+
+  function playWinSound(){
+    try{
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      const ctx = new AudioContext();
+      const now = ctx.currentTime;
+      const notes = [523.25, 659.25, 783.99, 1046.5];
+      notes.forEach((freq, i) => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = "sine";
+        o.frequency.value = freq;
+        o.connect(g);
+        g.connect(ctx.destination);
+        const t0 = now + i*0.12;
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(0.18, t0 + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.11);
+        o.start(t0);
+        o.stop(t0 + 0.12);
+      });
+      setTimeout(()=> ctx.close(), 800);
+    }catch(e){}
+  }
+
+  function buildQuestions(){
+    const pairs = shuffle(WORDS);
+    const dirs = shuffle(Array(TOTAL_Q).fill("x").map((_,i)=> i<8 ? "JP2EN" : "EN2JP"));
+    return pairs.map((w, i) => {
+      const dir = dirs[i];
+      const prompt = (dir === "JP2EN") ? w.ja : w.en;
+      const answer = (dir === "JP2EN") ? w.en : w.ja;
+
+      const pool = WORDS.filter(x => x.en !== w.en);
+      const wrongs = shuffle(pool).slice(0,3).map(x => (dir === "JP2EN") ? x.en : x.ja);
+
+      const options = shuffle([answer, ...wrongs]);
+      return { dir, prompt, answer, options, word: w };
+    });
+  }
+
+  function setBear(mode){
+    bearEl.classList.remove("dance");
+    bigWinEl.style.display = "none";
+    if(mode === "waiting"){
+      bearStatusEl.textContent = "Waiting";
+      bearEl.textContent = "🐻";
+    } else if(mode === "playing"){
+      bearStatusEl.textContent = "Go!";
+      bearEl.textContent = "🐻‍❄️";
+    } else if(mode === "win"){
+      bearStatusEl.textContent = "Dancing!";
+      bearEl.textContent = "🐻🎉";
+      bearEl.classList.add("dance");
+      bigWinEl.style.display = "block";
+    } else if(mode === "fail"){
+      bearStatusEl.textContent = "Try again";
+      bearEl.textContent = "🐻💦";
+    }
+  }
+
+  function updateTop(){
+    timeEl.textContent = formatTime(remaining);
+    scoreEl.textContent = score;
+    qNumEl.textContent = Math.min(qIndex+1, TOTAL_Q);
+    progressEl.style.width = `${(qIndex/TOTAL_Q)*100}%`;
+  }
+
+  function renderMissed(){
+    if(!missedCardEl || !missedListEl) return;
+
+    if(missedWords.length === 0){
+      missedCardEl.style.display = "none";
+      missedListEl.innerHTML = "";
+      return;
+    }
+    const unique = [...new Set(missedWords)];
+    missedCardEl.style.display = "block";
+    missedListEl.innerHTML = unique.map(w => "・" + w).join("<br>");
+  }
+
+  function renderQuestion(){
+    locked = false;
+    const q = questions[qIndex];
+    if(!q){
+      finish(false);
+      return;
+    }
+
+    statusTextEl.textContent = "Choose the correct answer";
+    qTextEl.textContent = q.prompt;
+
+    const dirLabel = (q.dir === "JP2EN") ? "🇯🇵→🇺🇸 日本語→英語" : "🇺🇸→🇯🇵 英語→日本語";
+    document.getElementById("dirTag").textContent = dirLabel;
+
+    choicesEl.innerHTML = "";
+    q.options.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.className = "choice";
+      btn.textContent = opt;
+      btn.addEventListener("click", () => pick(opt));
+      choicesEl.appendChild(btn);
+    });
+
+    updateTop();
+  }
+
+  function lockChoices(){
+    [...choicesEl.querySelectorAll("button.choice")].forEach(b => b.disabled = true);
+  }
+
+  function pick(selected){
+    if(locked) return;
+    locked = true;
+
+    const q = questions[qIndex];
+    const correct = (selected === q.answer);
+
+    lockChoices();
+
+    [...choicesEl.querySelectorAll("button.choice")].forEach(b => {
+      if(b.textContent === q.answer) b.classList.add("good");
+      if(b.textContent === selected && !correct) b.classList.add("bad");
+    });
+
+    if(correct){
+      score++;
+      statusTextEl.textContent = "Correct! ✅";
+      showToast("✅ Correct!");
+    }else{
+      statusTextEl.textContent = `Wrong… ❌  (Answer: ${q.answer})`;
+      showToast("❌ Wrong");
+
+      missedWords.push(
+        q.dir === "JP2EN"
+          ? `${q.word.ja} → ${q.word.en}`
+          : `${q.word.en} → ${q.word.ja}`
+      );
+    }
+
+    updateTop();
+
+    setTimeout(() => {
+      qIndex++;
+      if(qIndex >= TOTAL_Q){
+        finish(true);
+      }else{
+        renderQuestion();
+      }
+    }, 650);
+  }
+
+  function start(){
+    if(started) return;
+    started = true;
+
+    questions = buildQuestions();
+    remaining = LIMIT_SEC;
+    score = 0;
+    qIndex = 0;
+
+    missedWords = [];
+    renderMissed();
+
+    startBtn.disabled = true;
+    restartBtn.disabled = false;
+
+    setBear("playing");
+    updateTop();
+    renderQuestion();
+
+    timer = setInterval(() => {
+      remaining--;
+      timeEl.textContent = formatTime(remaining);
+
+      if(remaining === 30) showToast("⏳ 30 seconds left!");
+      if(remaining <= 0){
+        remaining = 0;
+        timeEl.textContent = formatTime(0);
+        finish(false);
+      }
+    }, 1000);
+  }
+
+  function stopTimer(){
+    if(timer){
+      clearInterval(timer);
+      timer = null;
+    }
+  }
+
+  function finish(completedAll){
+    stopTimer();
+    lockChoices();
+
+    progressEl.style.width = `${(Math.min(qIndex, TOTAL_Q)/TOTAL_Q)*100}%`;
+
+    const success = completedAll && remaining > 0;
+    if(success){
+      statusTextEl.textContent = `Finished! Score: ${score}/16 🎉`;
+      qTextEl.textContent = "CLEAR!";
+      setBear("win");
+      playWinSound();
+
+      rewards += 1;
+      localStorage.setItem(REWARD_KEY, String(rewards));
+      rewardCountEl.textContent = rewards;
+      rewardCountEl2.textContent = rewards;
+
+      showToast("🎁 Reward earned!");
+    }else{
+      statusTextEl.textContent = `Time's up! Score: ${score}/16`;
+      qTextEl.textContent = "TRY AGAIN";
+      setBear("fail");
+      showToast("💪 One more time!");
+    }
+
+    renderMissed();
+
+    startBtn.disabled = true;
+    restartBtn.disabled = false;
+  }
+
+  function restart(){
+    stopTimer();
+    started = false;
+    locked = false;
+
+    remaining = LIMIT_SEC;
+    score = 0;
+    qIndex = 0;
+
+    missedWords = [];
+    renderMissed();
+
+    qTextEl.textContent = "Press Start";
+    statusTextEl.textContent = "Choose the correct answer";
+    choicesEl.innerHTML = "";
+    progressEl.style.width = "0%";
+    document.getElementById("dirTag").textContent = "↔︎ Mix (JP⇄EN)";
+    setBear("waiting");
+    updateTop();
+
+    startBtn.disabled = false;
+    restartBtn.disabled = true;
+  }
+
+  startBtn.addEventListener("click", start);
+  restartBtn.addEventListener("click", restart);
+
+  restart();
+})();
+</script>
+</body>
+</html>
